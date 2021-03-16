@@ -7,6 +7,7 @@ import importlib
 import logging
 import os
 import sqlite3
+import sys
 
 from bou import BouError
 
@@ -49,16 +50,30 @@ def location(migrations):
         return fspath
 
     try:
-        importlib.import_module(migrations)
+        module(migrations)
         logging.debug(f'Migrations package located at "{migrations}"')
         return migrations
 
-    except (TypeError, ModuleNotFoundError):
+    except (ImportError, TypeError, ModuleNotFoundError):
         raise BackingError(
             f'Fully qualify or verify the existence of package "{migrations}".'
         )
 
     raise BackingError(f'Migrations not located at "{migrations}".')
+
+
+def module(spec):
+    """ Returns the module at :spec:
+
+    :param spec: to load.
+    :type spec: str
+    """
+    cwd = os.getcwd()  # @see Issue
+
+    if cwd not in sys.path:
+        sys.path.append(cwd)
+
+    return importlib.import_module(spec)
 
 
 def open(database):
