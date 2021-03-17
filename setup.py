@@ -13,7 +13,7 @@ EMAIL = 'jay@clearlyoutplayed.com'
 LICENSE = 'MIT'
 NAME = 'bou'
 URL = 'http://github.com/Feastybeast/bou'
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
 setup(
     name=NAME,
@@ -34,7 +34,7 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: Public Domain',
+        'License :: MIT',
         'Topic :: Database',
         'Topic :: Software Development :: Version Control',
         'Topic :: Software Development :: Build Tools',

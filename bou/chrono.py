@@ -26,9 +26,17 @@ def as_readable(st_time):
     return time.strftime('%x %X GMT', st_time)
 
 
+def at(timestamp):
+    """ Sugarcoats :timestamp: with standard library calls.
+
+    :returns time.st_time: of time.gmtime()
+    """
+    return time.gmtime(timestamp)
+
+
 def now():
     """ Gets "now" at GMT.
 
     :returns time.st_time: of time.gmtime()
     """
-    return time.gmtime()
+    return at(None)

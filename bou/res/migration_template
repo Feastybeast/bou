@@ -10,6 +10,9 @@ Generated on: {{localtime}}
 import sqlite3
 
 
+VERSION = {{version}}  # for flow control.
+
+
 def downgrade(conn):
     """ Invoked automatically via ```bou downgrade```
 
@@ -19,11 +22,9 @@ def downgrade(conn):
     try:
         conn.execute('')
 
-    except sqlite3.Error:
+    except sqlite3.Error as e:
         conn.rollback()
-
-    finally:
-        conn.close()
+        raise e
 
 
 def upgrade(conn):
@@ -35,8 +36,7 @@ def upgrade(conn):
     try:
         conn.execute('')
 
-    except sqlite3.Error:
+    except sqlite3.Error as e:
         conn.rollback()
+        raise e
 
-    finally:
-        conn.close()

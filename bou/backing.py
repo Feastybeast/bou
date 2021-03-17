@@ -3,12 +3,15 @@
     A bit of support code to locate where migrations are.
 """
 
+import collections
+import enum
 import importlib
 import logging
 import os
 import sqlite3
 import sys
 
+from bou.constants import INPUT, OUTPUT, TYPE
 from bou import BouError
 
 
@@ -30,6 +33,10 @@ def create(database):
             );
         """)
 
+        cur.execute("""
+            INSERT INTO _bou (migration) VALUES (0);
+        """)
+
         conn.commit()
         conn.close()
 
@@ -38,21 +45,22 @@ def create(database):
 
 
 def location(migrations):
-    """ Does :resource: exist as a package or filesystem location?
+    """ Returns the filesystem location of :migrations:
 
-    :param migrations: of the given parameter.
-    :type migrations: any
+    :param migrations: python package or directory to consider.
+    :type migrations: str
+    :returns: Location
     """
     fspath = os.path.abspath(migrations)
 
     if os.path.exists(fspath):
         logging.debug(f'Migrations path located at "{fspath}"')
-        return fspath
+        return Location(migrations, fspath, LocationType.FILESYSTEM)
 
     try:
-        module(migrations)
+        m = module(migrations)
         logging.debug(f'Migrations package located at "{migrations}"')
-        return migrations
+        return Location(migrations, m.__path__.pop(), LocationType.PACKAGE)
 
     except (ImportError, TypeError, ModuleNotFoundError):
         raise BackingError(
@@ -65,10 +73,12 @@ def location(migrations):
 def module(spec):
     """ Returns the module at :spec:
 
+    @see Issue #2
+
     :param spec: to load.
     :type spec: str
     """
-    cwd = os.getcwd()  # @see Issue
+    cwd = os.getcwd()
 
     if cwd not in sys.path:
         sys.path.append(cwd)
@@ -124,3 +134,11 @@ class BackingError(BouError):
 class UnversionedError(BackingError):
     """ Not managed by bou """
     pass
+
+
+class LocationType(enum.Enum):
+    FILESYSTEM = 0
+    PACKAGE = 1
+
+
+Location = collections.namedtuple('Location', [INPUT, OUTPUT, TYPE])

@@ -15,7 +15,12 @@ def version(database):
     try:
         with conn:
             curr = conn.cursor()
-            smt = curr.execute("SELECT migration FROM _bou")
+            smt = curr.execute("""
+                SELECT migration
+                FROM _bou
+                ORDER BY id
+                LIMIT 1
+            """)
             return smt.fetchone()[0]
 
     except (sqlite3.OperationalError, TypeError):

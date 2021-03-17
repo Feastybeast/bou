@@ -3,6 +3,8 @@
     Non-mutating operations against migration files.
 """
 
+from collections import namedtuple
+
 import bou.chrono
 import bou.constants as c
 
@@ -15,11 +17,9 @@ def from_args(name, unixtime):
     :param unixtime: to utilize.
     :type unixtime: time.st_time
     """
-    scrubbed_name = name
+    localtime = bou.chrono.as_readable(unixtime)
 
-    migration_vars = {}
-    migration_vars[c.LOCALTIME] = bou.chrono.as_readable(unixtime)
-    migration_vars[c.NAME] = scrubbed_name.translate(
+    scrubbed_name = name.translate(
         str.maketrans({
             c.ASTERISK: c.BLANK,
             c.BACK_SLASH: c.BLANK,
@@ -30,17 +30,39 @@ def from_args(name, unixtime):
             c.QUOTE: c.BLANK,
         })
     )
-    migration_vars[c.VERSION] = bou.chrono.as_int(unixtime)
+    version = bou.chrono.as_int(unixtime)
 
-    return migration_vars
+    return MigrationVars(localtime, scrubbed_name, version)
 
 
 def from_filename(basename):
-    """ Given :basename:, reverse back to migration_vars """
+    """ Given :basename:, reverse back to migration_vars
+
+    :param basename: of the file to reverse.
+    :type basename: str
+    """
     ts, fs = basename.split(c.UNDERSCORE, 1)
-    fs = fs.split(c.UNDERSCORE)
+    ts = bou.chrono.at(int(ts))
+    fs = fs.replace(c.UNDERSCORE, c.SPACE)
 
     return from_args(fs, ts)
+
+
+def is_valid(module):
+    """ Does this look like it's a real module?
+
+    :param module: to inspect.
+    :type module: module
+    """
+    return all([
+        hasattr(module, c.DOWNGRADE),
+        callable(module[c.DOWNGRADE]),
+
+        hasattr(module, c.UPGRADE),
+        callable(module[c.UPGRADE]),
+
+        hasattr(module, c.VERSION_CONST)
+    ])
 
 
 def to_filename(migration_vars):
@@ -52,10 +74,17 @@ def to_filename(migration_vars):
     :type name: str
     """
     prefix = c.UNDERSCORE.join([
-        str(migration_vars[c.VERSION]),
-        migration_vars[c.NAME].replace(
+        str(migration_vars.version),
+        migration_vars.name.replace(
             c.SPACE, c.UNDERSCORE
         ).lower()
     ])
 
     return f'{prefix}{c.DOT_PY}'
+
+
+MigrationVars = namedtuple('MigrationVars', [
+    c.LOCALTIME,
+    c.NAME,
+    c.VERSION
+])

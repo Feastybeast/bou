@@ -17,9 +17,10 @@ def create(name, migrations):
     :type migrations: a filesystem path or fully qualified python package
     """
     migration_ts = bou.chrono.now()
-    t_vars = bou.migration.from_args(name, migration_ts)
-    fn = bou.migration.to_filename(t_vars)
-    tmpl = _template(**t_vars)
+    m_vars = bou.migration.from_args(name, migration_ts)
+    fn = bou.migration.to_filename(m_vars)
+
+    tmpl = _template(m_vars._asdict())
 
     fully_qualified_path = os.path.join(migrations, fn)
 
@@ -27,14 +28,14 @@ def create(name, migrations):
         fh.write(tmpl)
 
 
-def _template(**kwargs):
-    """ Generates a Jinja template from :**kwargs:
+def _template(values):
+    """ Generates a Jinja template from :values:
 
-    :param **kwargs: @see ._vars()
-    :type **kwargs: dict
+    :param values: to digest.
+    :type values: dict
     """
     template = Environment(
         loader=PackageLoader('bou', 'res')
     ).get_template('migration_template')
 
-    return template.render(**kwargs)
+    return template.render(**values)
