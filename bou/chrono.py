@@ -6,37 +6,31 @@
 import time
 
 
-def as_int(st_time):
-    """ Truncates :st_time: into a discrete amount of seconds.
+def as_int(st_time: time.st_time) -> int:
+    """ Truncates :st_time: to the second.
 
     :param st_time: to convert to an integer.
-    :type st_time: time.st_time
-    :returns int: of :st_time: rounded to the second
+    :returns: st_time to the second.
     """
     return int(time.mktime(st_time))
 
 
-def as_readable(st_time):
-    """ Transcribe :st_time: into a human readable string.
+def as_readable(st_time: time.st_time) -> str:
+    """ Transcribe :st_time: as a GMT based human readable string.
 
-    :param st_time: to convert to an integer.
-    :type st_time: time.st_time
-    :returns str: of locale appropriate timestamps.
+    :returns: a locale appropriate timestamp.
     """
     return time.strftime('%x %X GMT', st_time)
 
 
-def at(timestamp):
-    """ Sugarcoats :timestamp: with standard library calls.
-
-    :returns time.st_time: of time.gmtime()
-    """
+def at(timestamp: int) -> time.st_time:
+    """ Sugarcoats :timestamp: with standard library calls. """
     return time.gmtime(timestamp)
 
 
-def now():
-    """ Gets "now" at GMT.
+def now() -> time.st_time:
+    """ Returns now, GMT.
 
-    :returns time.st_time: of time.gmtime()
+    :returns: "now" at GMT.
     """
     return at(None)

@@ -1,3 +1,3 @@
 import bou.cli
 
-bou.cli.main()
+bou.cli.main.main()

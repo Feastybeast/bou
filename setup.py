@@ -13,7 +13,7 @@ EMAIL = 'jay@clearlyoutplayed.com'
 LICENSE = 'MIT'
 NAME = 'bou'
 URL = 'http://github.com/Feastybeast/bou'
-VERSION = '0.2.0'
+VERSION = '2.0.0'
 
 setup(
     name=NAME,
@@ -28,7 +28,7 @@ setup(
     py_modules=['bou'],
     entry_points={
         'console_scripts': [
-            'bou=bou.cli:main',
+            'bou=bou.cli.main:main',
         ]
     },
     classifiers=[
