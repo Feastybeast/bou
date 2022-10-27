@@ -1,4 +1,4 @@
-""" bou.cli
+""" bou.cli.main
     ~~~
     The CLI to the bou library.
     @see bou.actions.<method>.<method>() for implementations.

@@ -1,4 +1,4 @@
-""" bou.chrono
+""" bou.lib.chrono
     ~~~
     Details about timing for the application.
 """

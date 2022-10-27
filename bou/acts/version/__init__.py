@@ -1,4 +1,4 @@
-""" bou.actions.version
+""" bou.acts.version
     ~~~
     List the bou migration value of the given database.
 """
@@ -6,7 +6,7 @@
 import pathlib
 
 import bou.backing.operations as operations
-import bou.backing.errors as errors
+import bou.lib.errors as errors
 
 
 def version(database: pathlib.Path) -> int:

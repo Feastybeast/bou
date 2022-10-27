@@ -1,4 +1,4 @@
-""" bou.constants """
+""" bou.lib.constants """
 
 ASTERISK = '*'
 BACK_SLASH = '\\'
