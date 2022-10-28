@@ -11,15 +11,6 @@ import pathlib
 import bou.constants as const
 
 
-class Direction(enum.Enum):
-    """ Direction should be self explanatory, with ...
-            .UPGRADE
-            .DOWNGRADE
-    """
-    UPGRADE = const.UPGRADE
-    DOWNGRADE = const.DOWNGRADE
-
-
 """
 bou.migrate.helpers(Migration) => Location(.input, .output, LocationType)
    .input = what was passed in. filepath, python.package.path, etc.

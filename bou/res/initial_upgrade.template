@@ -1,0 +1,25 @@
+# Maps migration timestamps to execution timestamps.
+curr.execute("""
+    CREATE TABLE "_bou" (
+        "id"    INTEGER,
+        "version" INTEGER NOT NULL,
+        "crc" INTEGER NOT NULL,
+        "on" INTEGER NOT NULL,
+        PRIMARY KEY("id" AUTOINCREMENT)
+    );
+""")
+
+# There can be only one Boufile.
+curr.execute("""
+    CREATE TABLE "_boufile" (
+        "uuid"    TEXT,
+        "location" TEXT
+    );
+
+    CREATE TRIGGER _boufile_one_insert
+    BEFORE INSERT ON _boufile
+    WHEN (SELECT COUNT(*) FROM config) >= 1
+    BEGIN
+        SELECT RAISE(FAIL, 'Boufile already exists.');
+    END;
+""")

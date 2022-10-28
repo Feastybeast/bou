@@ -11,6 +11,11 @@ class BackingError(BouError):
     pass
 
 
+class BoufileError(BouError):
+    """ raised when a Boufile couldn't be created """
+    pass
+
+
 class MigrationError(BouError):
     """ thrown when a module's method failed. """
     pass

@@ -1,44 +1,37 @@
-"""
-This module is a bou migration.
-See https://github.com/Feastybeast/bou for details.
+""" {{ fully_qualified_migration_dir }}/{{ version }}_{{ brief }}.py
 
-Migration Name: {{name}}
-Migration Version: {{version}}
-Generated on: {{localtime}}
+{{ bou_migration_header }}
+{{ bou_url_pre }}{{ bou_url }}{{ bou_url_post }}
+
+{{ brief_preface }}{{ brief }}
+{{ version_preface }}{{ version }}
+{{ localtime_preface }}{{ localtime }}
 """
 
 import sqlite3
 
+BOUFILE = {{ BOUFILE }}
+VERSION = {{ version }}
 
-VERSION = {{version}}  # for flow control.
 
+def downgrade(conn: sqlite3.Connection):
+    """ {{ invocation_description }}
 
-def downgrade(conn):
-    """ Invoked automatically via ```bou downgrade```
+    {{ exception_warning }}
 
-    :param conn: to execute the SQL against.
-    :type conn: sqlite3.Connection
+    :param conn: {{ param_conn_description }}
     """
-    try:
-        conn.execute('''
-        ''')
-
-    except sqlite3.Error as e:
-        conn.rollback()
-        raise e
+    conn.execute('''
+    ''')
 
 
-def upgrade(conn):
-    """ Invoked automatically via ```bou upgrade```
 
-    :param conn: to execute the SQL against.
-    :type conn: sqlite3.Connection
+def upgrade(conn: sqlite3.Connection):
+    """ {{ invocation_description }}
+
+    {{ exception_warning }}
+
+    :param conn: {{ param_conn_description }}
     """
-    try:
-        conn.execute('''
-        ''')
-
-    except sqlite3.Error as e:
-        conn.rollback()
-        raise e
-
+    conn.execute('''
+    ''')

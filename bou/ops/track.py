@@ -8,7 +8,7 @@ import pathlib
 import bou.backing.operations as operations
 
 
-def action(database: pathlib.Path):
+def track(database: pathlib.Path):
     """ [Creates and] adds bou management to :database:
 
     :param database: path on the filesystem.

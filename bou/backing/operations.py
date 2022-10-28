@@ -1,6 +1,8 @@
 """ bou.backing.operations
     ~~~
     A bit of support code to locate where migrations are.
+
+    # Make Bou migrate itself into existence.
 """
 
 
@@ -14,22 +16,7 @@ def track(database: pathlib.Path):
 
     :param database: location to store the database at.
     """
-    with fetch(database) as conn:
-        cur = conn.cursor()
-
-        cur.execute("""
-            CREATE TABLE "_bou" (
-                "id"    INTEGER,
-                "migration" INTEGER NOT NULL,
-                PRIMARY KEY("id" AUTOINCREMENT)
-            );
-        """)
-
-        cur.execute("""
-            INSERT INTO _bou (migration) VALUES (0);
-        """)
-
-        conn.commit()
+    # See the template work. It's gonna dogfood itself into existence.
 
 
 def version(database: pathlib.Path):
