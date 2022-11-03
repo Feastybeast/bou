@@ -3,14 +3,14 @@
     Migrates a database. Hooray.
 """
 
-import pathlib
-
 from bou.backing.helpers import fetch
 from bou.lib.errors import MigrationError
 from bou.lib.types import Migration
 
+from bou.lib.types import Database
 
-def dry_run(migrations: Migration, database: pathlib.Path, version):
+
+def dry_run(migrations: Migration, database: Database, version):
     """ Normalized migration behaviors for bou.
 
     :param database: to act upon.
@@ -22,7 +22,7 @@ def dry_run(migrations: Migration, database: pathlib.Path, version):
     # Throw it away if it succeeded.
 
 
-def migrate(migrations: Migration, database: pathlib.Path, version):
+def migrate(migrations: Migration, database: Database, version):
     """ Normalized migration behaviors for bou.
 
     :param database: to act upon.

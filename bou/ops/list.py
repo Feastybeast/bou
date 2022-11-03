@@ -1,6 +1,5 @@
-""" bou.acts.list """
+""" bou.ops.list """
 
-import os
 import sys
 
 from bou.lib.types import Migration
@@ -15,7 +14,7 @@ def action(migrations: Migration, start: int = 0, stop: int = sys.maxsize):
     candidates = sorted(
         filter(
             _is_migration(start, stop),
-            os.listdir(migrations)
+            migrations
         )
     )
 

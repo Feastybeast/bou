@@ -5,38 +5,66 @@
         in `database_loc`'s migrations directory.
 """
 
-import pathlib
+import uuid
 
-from jinja2 import Environment, PackageLoader
-
-import bou.lib.chrono
 import bou.lib.boufile
+import bou.lib.chrono
+from bou.lib.types import (
+    Brief, Database, MigrationDir, MigrationFile, TemplateVars
+)
+
+import bou.backing.operations
 
 
-def action(database: pathlib.Path, *brief: list[str]):
+def add(database: Database, *brief: Brief):
     """ Creates "<gmtime>_:brief:.py" in :database:'s migration directory.
 
     :param migration_loc: to write the template to.
     :param human_readable: space seperated string to describe the migration.
     """
-    migration_ts = bou.chrono.now()
-    m_vars = bou.lib.boufile.from_args(*brief, migration_ts)
-    filename = bou.lib.boufile.to_filename(m_vars)
+    migration_dir, uuid = _locate(database)
+    _guard(migration_dir, uuid)
+    template_vars = _vars(uuid, *brief)
+    filename = _filename(template_vars)
+    contents = _template(migration_dir, uuid, template_vars)
 
-    tmpl = _template(m_vars._asdict())
-
-    fully_qualified_path = pathlib.Path() / filename
-    fully_qualified_path.write_text(tmpl)
+    _write(migration_dir / filename, contents)
 
 
-def _template(values):
-    """ Generates a Jinja template from :values:
+def _filename(template_vars: TemplateVars) -> str:
+    """ """
+    return bou.lib.boufile.to_filename(template_vars)
 
-    :param values: to digest.
-    :type values: dict
+
+def _guard():
+    """ """
+    pass
+
+
+def _locate(database: Database) -> MigrationDir:
+    """ See bou.backing.operations.directory_of(database)
+
+    :param database: to interrogate.
     """
-    template = Environment(
-        loader=PackageLoader('bou', 'res')
-    ).get_template('migration_template')
+    return bou.backing.operations.directory_of(database)
 
-    return template.render(**values)
+
+def _template(mig_dir: MigrationDir, template_vars: TemplateVars) -> str:
+    """ Creates "<gmtime>_:brief:.py" in :database:'s migration directory.
+
+    :param migration_loc: to write the template to.
+    :param human_readable: space seperated string to describe the migration.
+    """
+    return bou.lib.boufile.template(template_vars._asdict())
+
+
+def _vars(uuid: uuid.uuid4, *brief: Brief):
+    return bou.lib.boufile.from_args(
+        *brief,
+        bou.lib.chrono.now()
+    )
+
+
+def _write(path: MigrationFile, contents: str):
+    """ """
+    path.write_text(contents)

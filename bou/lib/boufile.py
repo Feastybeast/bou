@@ -4,18 +4,19 @@
     database to prevent contamination of migrations.
 """
 
-import pathlib
 import time
 import types
 import uuid
 
+from jinja2 import Environment, PackageLoader
+
 import bou.lib.chrono
 import bou.lib.constants as const
 from bou.lib.errors import BoufileError
-from bou.lib.types import TemplateVars
+from bou.lib.types import MigrationDir, TemplateVars
 
 
-def create(directory: pathlib.Path):
+def create(directory: MigrationDir):
     """ Creates :directory:/Boufile
 
     :param directory: to generate the file in.
@@ -30,7 +31,7 @@ def create(directory: pathlib.Path):
         raise BoufileError()
 
 
-def from_args(name: str, unixtime: time.st_time) -> TemplateVars:
+def from_args(name: str, unixtime: time.struct_time) -> TemplateVars:
     """ Generate TemplateVars for the given :name: and :unixtime:
 
     :param name: to include in the filename.
@@ -85,16 +86,29 @@ def is_valid(module: types.ModuleType) -> bool:
     ])
 
 
-def to_filename(migration_vars: TemplateVars) -> str:
-    """ Generate the filename of the given :migration_vars:
+def to_filename(template_vars: TemplateVars) -> str:
+    """ Generate the filename of the given :template_vars:
 
-    :param migration_vars: to parse.
+    :param template_vars: to parse.
     """
     prefix = const.UNDERSCORE.join([
-        str(migration_vars.version),
-        migration_vars.name.replace(
+        str(template_vars.version),
+        template_vars.name.replace(
             const.SPACE, const.UNDERSCORE
         ).lower()
     ])
 
     return f'{prefix}{const.DOT_PY}'
+
+
+def template(values):
+    """ Generates a Jinja template from :values:
+
+    :param values: to digest.
+    :type values: dict
+    """
+    template = Environment(
+        loader=PackageLoader('bou', 'res')
+    ).get_template('migration_template')
+
+    return template.render(**values)

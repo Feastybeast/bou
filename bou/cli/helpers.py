@@ -4,12 +4,19 @@
 """
 
 import functools
+import pathlib
 import sys
 import traceback
 
 import click
 
-import bou.errors
+from bou.lib.constants import DEFAULT_MIGRATIONS_DIRECTORY
+import bou.lib.errors as errors
+
+
+def cwd() -> pathlib.Path:
+    """ Gets the current directory """
+    return pathlib.cwd()
 
 
 def error():
@@ -32,6 +39,19 @@ def exit(msg, exit_code):
     sys.exit(exit_code)
 
 
+def patch_sys_dot_path():
+    """ Adds the current working directory to sys.path, if needed. """
+    the_cwd = cwd()
+
+    if the_cwd not in sys.path:
+        sys.path.append(the_cwd)
+
+
+def suggest_default_path() -> pathlib.Path:
+    """ Suggest "./migrations" as a default """
+    return cwd() / DEFAULT_MIGRATIONS_DIRECTORY
+
+
 def unhappy_case_handler(click_func: callable):
     """ Provides return management for :click_func:
 
@@ -43,16 +63,17 @@ def unhappy_case_handler(click_func: callable):
         try:
             click_func(*args, **kwargs)
 
-        except bou.errors.BackingError:
+        except errors.BackingError:
             raise click.BadParameter(
                 f'Fully qualify or verify the package "{args[0]}".'
             )
 
-        except bou.errors.MigrationsError:
+        except errors.MigrationError:
             raise click.BadParameter(f'Migrations not located at "{args[0]}".')
 
-        except Exception as e:
-            exit(e, 1)
+        except Exception:
+            error()
+            exit('', 1)
 
         else:
             exit('Done.', 0)

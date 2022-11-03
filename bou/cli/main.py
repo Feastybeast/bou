@@ -5,13 +5,11 @@
 """
 
 import math
-import pathlib
 
 import click
 
 import bou.cli.helpers as helpers
-
-from bou.lib.constants import DEFAULT_MIGRATIONS_DIRECTORY, SPACE
+from bou.lib.types import Brief, Database
 
 
 @click.group()
@@ -20,10 +18,10 @@ def main():
 
 
 @main.command(short_help='Create a new migration for :database:')
-@click.argument('database', type=pathlib.Path)
-@click.argument('description', nargs=-1, required=True, type=str)
+@click.argument('database', type=Database)
+@click.argument('brief', nargs=-1, required=True, type=str)
 @helpers.unhappy_case_handler
-def add(database: pathlib.Path, brief: list[str]):
+def add(database: Database, brief: Brief):
     """ Add a new migration for :database: with a :brief: description.
 
     Writing to a python module is asking for trouble.
@@ -32,22 +30,18 @@ def add(database: pathlib.Path, brief: list[str]):
     :param database: to add the migration to.
     :param brief: description of the migration goals.
     """
-    from bou.ops.add import locate, migration
+    from bou.ops.add import add
 
-    migrations_dir = locate(database)
-    migration(
-        migrations_dir, SPACE.join(brief)
-    )
+    add(database, brief)
 
 
 @main.command(short_help='Lists available :migrations:')
-@click.argument('database', type=pathlib.Path)
+@click.argument('database', type=Database)
 @helpers.unhappy_case_handler
-def list(database: pathlib.Path):
-    """ Lists all migrations at :migrations:
+def list(database: Database):
+    """ Lists all of :database:'s migrations
 
-    :param migrations: module or filesystem path to iterate.
-    :type migrations: str
+    :param database: to interrogate.
     """
     import bou.ops.list
 
@@ -67,16 +61,16 @@ def list(database: pathlib.Path):
 
 
 @main.command(short_help='Instruct bou to manage migrations for :database:')
-@click.argument('database', required=True, type=pathlib.Path())
+@click.argument('database', required=True, type=Database)
 @helpers.unhappy_case_handler
-def track(database: pathlib.Path):
+def track(database: Database):
     """ Instruct bou to manage migrations for :database:
 
     :param database: file to track. Probably shouldn't exist, but you know.
     """
     import bou.ops.track
 
-    migrations_path = pathlib.Path.cwd() / DEFAULT_MIGRATIONS_DIRECTORY
+    migrations_path = helpers.suggest_default_path()
 
     if not click.confirm(f'Store migrations at "{migrations_path}" [Y/n]?'):
         click.echo('')
@@ -86,9 +80,9 @@ def track(database: pathlib.Path):
 
 
 @main.command(short_help='Migrate :database: to :migrations:/:version:')
-@click.argument('database', required=True, type=click.Path())
+@click.argument('database', required=True, type=Database)
 @click.argument('to_version', required=False, type=int)
-def migrate(database: pathlib.Path, to_version: int):
+def migrate(database: Database, to_version: int):
     """ Migrate :database: to :version: stored at :migrations:
 
     :param database: to upgrade.
@@ -96,11 +90,12 @@ def migrate(database: pathlib.Path, to_version: int):
     """
     import bou.ops.migrate
 
+    helpers.patch_sys_dot_path()
     bou.ops.migrate.migrate(database, to_version or math.inf)
 
 
 @main.command(short_help='Returns the migration state of the :database:')
-@click.argument('database', required=True, type=pathlib.Path())
+@click.argument('database', required=True, type=Database)
 def version(database):
     """ Returns the current version of :database:
 

@@ -4,48 +4,59 @@
 """
 
 import collections
-import enum
+from collections.abc import Iterable
 import typing
 import pathlib
 
-import bou.constants as const
+import bou.lib.constants as const
+
+"""
+Brief describes a brief human readable string, typically from *args
+"""
+Brief = typing.NewType('Brief', list[str])
 
 
 """
-bou.migrate.helpers(Migration) => Location(.input, .output, LocationType)
-   .input = what was passed in. filepath, python.package.path, etc.
-   .output = what the resulting filesystem location is.
-   .type = indicates what the input was.
+Database()s are syntactically sugarcoated pathlib.ConcretePath()s.
 """
-Location = collections.namedtuple('Location', [
-    const.INPUT, const.OUTPUT, const.TYPE
-])
+Database = typing.NewType('Database', pathlib.Path)
 
 
-class LocationType(enum.Enum):
+"""
+MigrationDir()s are pathlib.Paths, and are intended for bou writes.
+"""
+MigrationDir = typing.NewType('WritableMigration', pathlib.Path)
+
+"""
+MigrationFile()s are sugarcoated pathlib.Paths, for abstraction.
+"""
+MigrationFile = typing.NewType('MigrationFile', pathlib.Path)
+
+
+class Migration(Iterable):
     """
-    LocationType is
-        .FILESYSTEM = when determined to be a filesystem path.
-        .PACKAGE  = when abstracted into a python package.
+    Migration()s are iterables of Boufiles, usually coming from
+    methods that accept PathOrPackage arguments.
     """
-    FILESYSTEM = 0
-    PACKAGE = 1
+    pass
 
 
 """
-Migration = [ python.module.location || ../file/system/path ]
+Methods which read or process migrations can do so from either a PathOrPackage.
 """
-Migration = typing.Union[Location.output, pathlib.Path]
+PathOrPackage = typing.Union[MigrationDir | str]
 
 
 """
 TemplateVars
     .localtime: when the template was generated.
     .name: provided by the end user.
+    .uuid: that bundles all templates together.
     .version: issued to the migration.
 """
 TemplateVars = collections.namedtuple('TemplateVars', [
     const.LOCALTIME,
     const.NAME,
+    const.UUID,
     const.VERSION
 ])

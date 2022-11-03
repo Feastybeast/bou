@@ -1,14 +1,14 @@
-""" bou.acts.track
+""" bou.ops.track
     ~~~
-    Introduce _bou behaviors into the :database:.
+    Insert bou behaviors into the :database:.
 """
-
-import pathlib
 
 import bou.backing.operations as operations
 
+from bou.lib.types import Database
 
-def track(database: pathlib.Path):
+
+def track(database: Database):
     """ [Creates and] adds bou management to :database:
 
     :param database: path on the filesystem.

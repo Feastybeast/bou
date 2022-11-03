@@ -21,6 +21,11 @@ class MigrationError(BouError):
     pass
 
 
+class MigrationsSourceError(BouError):
+    """ thrown when a migrations source can't be located """
+    pass
+
+
 class UnversionedError(BackingError):
     """ thrown when a database isn't managed by bou """
     pass
