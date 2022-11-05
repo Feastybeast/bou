@@ -1,9 +1,9 @@
-""" bou.ops.list """
+""" bou.list.api """
 
 import sys
 
-from bou.lib.types import Migration
-from bou.lib.constants import DOT_PY, UNDERSCORE
+from bou.types import Migration
+from bou.constants import DOT_PY, UNDERSCORE
 
 
 def action(migrations: Migration, start: int = 0, stop: int = sys.maxsize):

@@ -1,11 +1,11 @@
-""" bou.acts.version
+""" bou.version.api
     ~~~
     List the bou migration value of the given database.
 """
 
-import bou.lib.backing
-import bou.lib.errors as errors
-from bou.lib.types import Database
+import bou.backing
+import bou.errors as errors
+from bou.types import Database
 
 
 def version(database: Database) -> int:
@@ -14,6 +14,6 @@ def version(database: Database) -> int:
     :param database: to query.
     """
     try:
-        return bou.lib.backing.version(database)
+        return bou.backing.version(database)
     except ():
         raise errors.UnversionedError()

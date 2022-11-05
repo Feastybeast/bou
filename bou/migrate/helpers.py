@@ -1,14 +1,14 @@
-""" bou.lib.migration_helpers
+""" bou.migrate.helpers
     ~~~
     Support behaviors for iterating migrations.
 """
 
-import importlib
 import logging
 
-from bou.lib.constants import BOUFILE
-from bou.lib.errors import MigrationsSourceError
-from bou.lib.types import Migration, PathOrPackage
+from bou.constants import BOUFILE
+from bou.errors import MigrationsSourceError
+import bou.modules
+from bou.types import Migration, PathOrPackage
 
 
 def location(migrations: PathOrPackage) -> Migration:
@@ -24,9 +24,9 @@ def location(migrations: PathOrPackage) -> Migration:
             logging.debug(f'Filesystem path located: {fspath}')
             return fspath.iterdir()
 
-        m = importlib.import_module(migrations)
+        m = bou.modules.load(migrations)
         logging.debug(f'Python package located: {migrations}')
-        return importlib.resources.files(m)
+        return bou.modules.resources(m)
 
     except (ImportError, TypeError, ModuleNotFoundError):
         raise MigrationsSourceError(

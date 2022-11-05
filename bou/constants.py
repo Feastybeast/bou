@@ -1,15 +1,19 @@
-""" bou.lib.constants """
+""" bou.constants """
 
 ASTERISK = '*'
 BACK_SLASH = '\\'
 BLANK = ''
+BOU = 'bou'
 BOUFILE = 'Boufile'
 DEFAULT_MIGRATIONS_DIRECTORY = 'migrations'
 DOUBLE_QUOTE = '"'
-DOT_PY = '.py'
+DOT = '.'
+DOT_PY = f'{DOT}py'
 FORWARD_SLASH = '/'
 GT = '>'
 INPUT = 'input'
+KWARG_BRIEF = 'brief'
+KWARG_DATABASE = 'database'
 LOCALTIME = 'localtime'
 LT = '<'
 NAME = 'name'

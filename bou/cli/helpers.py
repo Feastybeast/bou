@@ -10,13 +10,13 @@ import traceback
 
 import click
 
-from bou.lib.constants import DEFAULT_MIGRATIONS_DIRECTORY
-import bou.lib.errors as errors
+import bou.backing.errors
+from bou.constants import KWARG_DATABASE
 
 
 def cwd() -> pathlib.Path:
     """ Gets the current directory """
-    return pathlib.cwd()
+    return pathlib.Path.cwd()
 
 
 def error():
@@ -47,13 +47,8 @@ def patch_sys_dot_path():
         sys.path.append(the_cwd)
 
 
-def suggest_default_path() -> pathlib.Path:
-    """ Suggest "./migrations" as a default """
-    return cwd() / DEFAULT_MIGRATIONS_DIRECTORY
-
-
 def unhappy_case_handler(click_func: callable):
-    """ Provides return management for :click_func:
+    """ Provides exception management for :click_func:
 
     :param click_func: to be wrapped.
     """
@@ -63,13 +58,17 @@ def unhappy_case_handler(click_func: callable):
         try:
             click_func(*args, **kwargs)
 
-        except errors.BackingError:
-            raise click.BadParameter(
-                f'Fully qualify or verify the package "{args[0]}".'
+        except bou.backing.errors.BackingMissingError:
+            exit(
+                f'"{kwargs[KWARG_DATABASE]}" is missing. Aborting.',
+                1
             )
 
-        except errors.MigrationError:
-            raise click.BadParameter(f'Migrations not located at "{args[0]}".')
+        except bou.backing.errors.BackingUnversionedError:
+            exit(
+                f'"{kwargs[KWARG_DATABASE]}" not managed by bou. Aborting.',
+                1
+            )
 
         except Exception:
             error()

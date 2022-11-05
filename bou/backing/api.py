@@ -1,46 +1,34 @@
-""" bou.lib.backing
+""" bou.backing.helpers
     ~~~
     A bit of support code to locate where migrations are.
 
     # Make Bou migrate itself into existence.
 """
 
-from contextlib import contextmanager
 
-import sqlite3
+import uuid
 
-from bou.lib.types import Database
+import bou.backing.errors
+from bou.backing.helpers import fetch
+from bou.types import Database, MigrationDir
 
 
-@contextmanager
-def fetch(database: Database) -> sqlite3.Connection:
-    """ Fetches :database: and ensures a tidy closure.
+def exists(database: Database):
+    """ Because sqlite will implicitly operate on anything, bou needs
+        to halt some operations on non-existant databases for user clarity.
 
-    :param database: path to open.
-
-    :returns: the database connection.
+    :param database: to check the existence of.
     """
-    caught_exception = None
-
-    try:
-        conn = open(database)
-        yield conn
-
-    except sqlite3.Exception as e:
-        caught_exception = e
-        conn.rollback()
-
-    finally:
-        conn.close()
-
-    if caught_exception:
-        raise caught_exception
+    if not database.exists():
+        raise bou.backing.errors.BackingMissingError()
 
 
-def migrations_for(database: Database):
+def migrations_for(database: Database) -> (str, uuid.uuid4):
     """ Locate :database:'s migration directory as an absolute path and uuid.
 
     :param database: to open.
+
+    :returns: a pathlike object to the Migrations, and
     """
     with fetch(database) as conn:
         curr = conn.cursor()
@@ -51,10 +39,12 @@ def migrations_for(database: Database):
             LIMIT 1
         """)
 
-        return smt.fetchone()[0]
+        location, uuid = smt.fetchone()
+
+        return (location, uuid)
 
 
-def track(database: Database):
+def track(database: Database, migrations: MigrationDir):
     """ Create a migration-ready *database*.
 
     :param database: location to store the database at.

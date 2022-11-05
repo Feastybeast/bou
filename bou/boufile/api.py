@@ -1,4 +1,4 @@
-""" bou.lib.boufile
+""" bou.boufile.api
     ~~~
     Interacts with the Boufile, a uuid stored in migrations and a managed
     database to prevent contamination of migrations.
@@ -10,10 +10,10 @@ import uuid
 
 from jinja2 import Environment, PackageLoader
 
-import bou.lib.chrono
-import bou.lib.constants as const
-from bou.lib.errors import BoufileError
-from bou.lib.types import MigrationDir, TemplateVars
+import bou.chrono
+import bou.constants as const
+from bou.boufile.errors import BoufileCreationError
+from bou.types import MigrationDir, TemplateVars
 
 
 def create(directory: MigrationDir):
@@ -22,13 +22,15 @@ def create(directory: MigrationDir):
     :param directory: to generate the file in.
     """
     try:
-        bou_id = uuid.uuid4()
+        directory.mkdir(parents=True, exist_ok=True)
+
+        bou_id = str(uuid.uuid4())
         boufile = directory / const.BOUFILE
         boufile.write_text(bou_id)
         return bou_id
 
     except IOError:
-        raise BoufileError()
+        return BoufileCreationError()
 
 
 def from_args(name: str, unixtime: time.struct_time) -> TemplateVars:
@@ -70,22 +72,6 @@ def from_filename(basename: str) -> TemplateVars:
     return from_args(fs, ts)
 
 
-def is_valid(module: types.ModuleType) -> bool:
-    """ Does this look like it's a real module?
-
-    :param module: to inspect.
-    """
-    return all([
-        hasattr(module, const.DOWNGRADE),
-        callable(module[const.DOWNGRADE]),
-
-        hasattr(module, const.UPGRADE),
-        callable(module[const.UPGRADE]),
-
-        hasattr(module, const.VERSION_CONST)
-    ])
-
-
 def to_filename(template_vars: TemplateVars) -> str:
     """ Generate the filename of the given :template_vars:
 
@@ -112,3 +98,21 @@ def template(values):
     ).get_template('migration_template')
 
     return template.render(**values)
+
+
+def validate(boufile: types.ModuleType):
+    """ Ensure :boufile: looks legitimate, or throw a fit.
+
+    :param module: to inspect.
+    """
+    if not all([
+        hasattr(boufile, const.DOWNGRADE),
+        callable(boufile[const.DOWNGRADE]),
+
+        hasattr(boufile, const.UPGRADE),
+        callable(boufile[const.UPGRADE]),
+
+        hasattr(boufile, const.UUID_CONST),
+        hasattr(boufile, const.VERSION_CONST)
+    ]):
+        raise

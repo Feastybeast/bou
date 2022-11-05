@@ -4,10 +4,10 @@
 """
 
 from bou.backing.helpers import fetch
-from bou.lib.errors import MigrationError
-from bou.lib.types import Migration
+from bou.errors import MigrationError
+from bou.types import Migration
 
-from bou.lib.types import Database
+from bou.types import Database
 
 
 def dry_run(migrations: Migration, database: Database, version):

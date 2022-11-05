@@ -1,4 +1,4 @@
-""" bou.ops.add
+""" bou.add.api
     ~~~
     `bou add database_loc human readables`
         produces `{unixgmttime}_human_readables.py`
@@ -7,13 +7,12 @@
 
 import uuid
 
-import bou.lib.boufile
-import bou.lib.chrono
-from bou.lib.types import (
+import bou.backing.api as backing
+import bou.boufile.api as boufile
+import bou.chrono
+from bou.types import (
     Brief, Database, MigrationDir, MigrationFile, TemplateVars
 )
-
-import bou.backing.operations
 
 
 def add(database: Database, *brief: Brief):
@@ -22,8 +21,9 @@ def add(database: Database, *brief: Brief):
     :param migration_loc: to write the template to.
     :param human_readable: space seperated string to describe the migration.
     """
+    _guard_exists(database)
     migration_dir, uuid = _locate(database)
-    _guard(migration_dir, uuid)
+    _guard_synced(migration_dir, uuid)
     template_vars = _vars(uuid, *brief)
     filename = _filename(template_vars)
     contents = _template(migration_dir, uuid, template_vars)
@@ -33,10 +33,18 @@ def add(database: Database, *brief: Brief):
 
 def _filename(template_vars: TemplateVars) -> str:
     """ """
-    return bou.lib.boufile.to_filename(template_vars)
+    return boufile.to_filename(template_vars)
 
 
-def _guard():
+def _guard_exists(database: Database):
+    """ Ensure :database: actually exists on the filesystem.
+
+    :param database: to look for.
+    """
+    backing.exists(database)
+
+
+def _guard_synced():
     """ """
     pass
 
@@ -46,7 +54,7 @@ def _locate(database: Database) -> MigrationDir:
 
     :param database: to interrogate.
     """
-    return bou.backing.operations.directory_of(database)
+    return bou.backing.api.migrations_for(database)
 
 
 def _template(mig_dir: MigrationDir, template_vars: TemplateVars) -> str:
@@ -55,13 +63,13 @@ def _template(mig_dir: MigrationDir, template_vars: TemplateVars) -> str:
     :param migration_loc: to write the template to.
     :param human_readable: space seperated string to describe the migration.
     """
-    return bou.lib.boufile.template(template_vars._asdict())
+    return bou.boufile.template(template_vars._asdict())
 
 
 def _vars(uuid: uuid.uuid4, *brief: Brief):
-    return bou.lib.boufile.from_args(
+    return bou.boufile.api.from_args(
         *brief,
-        bou.lib.chrono.now()
+        bou.chrono.now()
     )
 
 
