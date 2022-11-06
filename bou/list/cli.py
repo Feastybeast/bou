@@ -5,15 +5,14 @@
 
 import click
 
-import bou.cli.helpers as helpers
-from bou.cli.main import main
+from bou.app.core import main, unhappy_case_handler
 from bou.constants import KWARG_DATABASE
 from bou.types import Database
 
 
 @main.command(short_help='Lists migrations known by :database:')
 @click.argument(KWARG_DATABASE, type=Database)
-@helpers.unhappy_case_handler
+@unhappy_case_handler
 def list(database: Database):
     """ Lists all of :database:'s migrations
 

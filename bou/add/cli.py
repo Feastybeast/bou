@@ -1,12 +1,13 @@
 """ bou.add.cli
     ~~~
-    module specific CLI behaviors.
+    `bou add database_loc human readables`
+        produces `{unixgmttime}_human_readables.py`
+        in `database_loc`'s migrations directory.
 """
 
 import click
 
-import bou.cli.helpers as helpers
-from bou.cli.main import main
+from bou.app.core import main, unhappy_case_handler
 from bou.constants import KWARG_BRIEF, KWARG_DATABASE
 from bou.types import Brief, Database
 
@@ -14,7 +15,7 @@ from bou.types import Brief, Database
 @main.command(short_help='Create a new migration for :database:')
 @click.argument(KWARG_DATABASE, type=Database)
 @click.argument(KWARG_BRIEF, nargs=-1, required=True, type=str)
-@helpers.unhappy_case_handler
+@unhappy_case_handler
 def add(database: Database, brief: Brief):
     """ Add a new migration for :database: with a :brief: description.
 

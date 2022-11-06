@@ -1,10 +1,9 @@
-""" bou.cli.helpers
+""" bou.app.core
     ~~~
-    Support code for the cli module.
+    Core CLI behaviors
 """
 
 import functools
-import pathlib
 import sys
 import traceback
 
@@ -14,9 +13,9 @@ import bou.backing.errors
 from bou.constants import KWARG_DATABASE
 
 
-def cwd() -> pathlib.Path:
-    """ Gets the current directory """
-    return pathlib.Path.cwd()
+@click.group()
+def main():
+    pass
 
 
 def error():
@@ -37,14 +36,6 @@ def exit(msg, exit_code):
     click.echo('')
     click.echo(msg)
     sys.exit(exit_code)
-
-
-def patch_sys_dot_path():
-    """ Adds the current working directory to sys.path, if needed. """
-    the_cwd = cwd()
-
-    if the_cwd not in sys.path:
-        sys.path.append(the_cwd)
 
 
 def unhappy_case_handler(click_func: callable):
@@ -78,3 +69,5 @@ def unhappy_case_handler(click_func: callable):
             exit('Done.', 0)
 
     return wrapper
+
+

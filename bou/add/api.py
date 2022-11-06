@@ -1,9 +1,4 @@
-""" bou.add.api
-    ~~~
-    `bou add database_loc human readables`
-        produces `{unixgmttime}_human_readables.py`
-        in `database_loc`'s migrations directory.
-"""
+""" bou.add.api """
 
 import uuid
 
@@ -11,7 +6,7 @@ import bou.backing.api as backing
 import bou.boufile.api as boufile
 import bou.chrono
 from bou.types import (
-    Brief, Database, MigrationDir, MigrationFile, TemplateVars
+    Brief, Database, BouDir, BouFile, TemplateVars
 )
 
 
@@ -49,7 +44,7 @@ def _guard_synced():
     pass
 
 
-def _locate(database: Database) -> MigrationDir:
+def _locate(database: Database) -> BouDir:
     """ See bou.backing.operations.directory_of(database)
 
     :param database: to interrogate.
@@ -57,7 +52,7 @@ def _locate(database: Database) -> MigrationDir:
     return bou.backing.api.migrations_for(database)
 
 
-def _template(mig_dir: MigrationDir, template_vars: TemplateVars) -> str:
+def _template(mig_dir: BouDir, template_vars: TemplateVars) -> str:
     """ Creates "<gmtime>_:brief:.py" in :database:'s migration directory.
 
     :param migration_loc: to write the template to.
@@ -73,6 +68,6 @@ def _vars(uuid: uuid.uuid4, *brief: Brief):
     )
 
 
-def _write(path: MigrationFile, contents: str):
+def _write(path: BouFile, contents: str):
     """ """
     path.write_text(contents)

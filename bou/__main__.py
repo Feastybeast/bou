@@ -3,6 +3,6 @@
     [Bleating intensifies. Against databases.]
 """
 
-import bou.cli
+import bou.app
 
-bou.cli.main.main()
+bou.app.main.main()

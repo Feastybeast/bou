@@ -28,7 +28,7 @@ setup(
     py_modules=['bou'],
     entry_points={
         'console_scripts': [
-            'bou=bou.cli.main:main',
+            'bou=bou.app.main:main',
         ]
     },
     classifiers=[

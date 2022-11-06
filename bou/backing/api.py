@@ -10,7 +10,7 @@ import uuid
 
 import bou.backing.errors
 from bou.backing.helpers import fetch
-from bou.types import Database, MigrationDir
+from bou.types import Database
 
 
 def exists(database: Database):

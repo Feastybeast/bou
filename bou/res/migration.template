@@ -1,4 +1,4 @@
-""" {{ fully_qualified_migration_dir }}/{{ version }}_{{ brief }}.py
+""" {{ fq_migration_dir }}{{ FORWARD_SLASH }}{{ version }}{{ UNDERSCORE }}{{ brief }}{{ DOT_PY }}
 
 {{ bou_migration_header }}
 {{ bou_url_pre }}{{ bou_url }}{{ bou_url_post }}
@@ -10,8 +10,8 @@
 
 import sqlite3
 
-BOUFILE = {{ BOUFILE }}
-VERSION = {{ version }}
+{{ BOUFILE_CONST }} = {{ BOUFILE }}
+{{ VERSION_CONST }} = {{ version }}
 
 
 def downgrade(conn: sqlite3.Connection):
@@ -21,8 +21,7 @@ def downgrade(conn: sqlite3.Connection):
 
     :param conn: {{ param_conn_description }}
     """
-    conn.execute('''
-    ''')
+{{ downgrade_template }}
 
 
 
@@ -33,5 +32,4 @@ def upgrade(conn: sqlite3.Connection):
 
     :param conn: {{ param_conn_description }}
     """
-    conn.execute('''
-    ''')
+{{ upgrade_template }}

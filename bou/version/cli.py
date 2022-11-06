@@ -5,7 +5,7 @@
 
 import click
 
-from bou.cli.main import main
+from bou.app.core import main
 from bou.constants import KWARG_DATABASE
 from bou.types import Database
 
@@ -18,7 +18,12 @@ def version(database):
     :param database: file to interrogate.
     :type database: click.Path
     """
-    import bou.version.api
+    import bou.backing.api
+    import bou.backing.errors
 
-    ver = bou.version.api.version(database)
-    click.echo(f'"{database}" is at migration {ver}')
+    try:
+        ver = bou.backing.api.version(database)
+        click.echo(f'"{database}" is at migration {ver}')
+
+    except bou.backing.errors.BackingUnversionedError:
+        click.warn(f'"{database}" is not versioned.')

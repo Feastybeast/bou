@@ -6,31 +6,13 @@
 
 import time
 import types
-import uuid
-
-from jinja2 import Environment, PackageLoader
 
 import bou.chrono
 import bou.constants as const
-from bou.boufile.errors import BouFileCreateError
-from bou.types import BouDir, TemplateVars
 
+from bou.boufile.errors import BoufileInvalidError
 
-def create(directory: BouDir):
-    """ Creates :directory:/Boufile
-
-    :param directory: to generate the file in.
-    """
-    try:
-        directory.mkdir(parents=True, exist_ok=True)
-
-        bou_id = str(uuid.uuid4())
-        boufile = directory / const.BOUFILE
-        boufile.write_text(bou_id)
-        return bou_id
-
-    except IOError:
-        return BouFileCreateError()
+from bou.types import TemplateVars
 
 
 def from_args(name: str, unixtime: time.struct_time) -> TemplateVars:
@@ -87,19 +69,6 @@ def to_filename(template_vars: TemplateVars) -> str:
     return f'{prefix}{const.DOT_PY}'
 
 
-def template(values):
-    """ Generates a Jinja template from :values:
-
-    :param values: to digest.
-    :type values: dict
-    """
-    template = Environment(
-        loader=PackageLoader('bou', 'res')
-    ).get_template('migration_template')
-
-    return template.render(**values)
-
-
 def validate(boufile: types.ModuleType):
     """ Ensure :boufile: looks legitimate, or throw a fit.
 
@@ -115,4 +84,4 @@ def validate(boufile: types.ModuleType):
         hasattr(boufile, const.UUID_CONST),
         hasattr(boufile, const.VERSION_CONST)
     ]):
-        raise
+        raise BoufileInvalidError

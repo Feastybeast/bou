@@ -1,28 +1,31 @@
-""" bou.boufile.errors """
+""" bou.boufile.errors
+    ~~~
+    Both BouDir{...} and BouFile{...} errors are here.
+"""
 
 from bou.errors import BouError
 
 
-class BoufileError(BouError):
-    """ raised for Boufile problems """
+class BouDirError(BouError):
+    """ raised for Boudir problems """
     pass
 
 
-class BoufileCreationError(BoufileError):
+class BouDirCreateError(BouDirError):
     """ bou.boufile.api.create() failed. """
     pass
 
 
-class BoufileInvalidError(BoufileError):
-    """ Whatever it is, it's not a Boufile """
+class BouFileError(BouError):
+    """ raised for BouFile problems """
     pass
 
 
-class MigrationError(BoufileError):
-    """ thrown when a module's method failed. """
+class BouFileCreateError(BouFileError):
+    """ Couldn't be made """
     pass
 
 
-class MigrationsSourceError(BouError):
-    """ thrown when a migrations source can't be located """
+class BoufileInvalidError(BouFileError):
+    """ Can't be read or corrupted """
     pass

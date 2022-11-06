@@ -7,8 +7,8 @@ import math
 
 import click
 
-import bou.cli.helpers as helpers
-from bou.cli.main import main
+from bou.app.core import main
+import bou.app.helpers as helpers
 from bou.constants import KWARG_DATABASE
 from bou.types import Database
 
@@ -19,7 +19,7 @@ from bou.types import Database
 def migrate(database: Database, to_version: int):
     """ Migrate :database: to :version: stored at :migrations:
 
-    :param database: to upgrade.
+    :param database: to migrate.
     :param version: to finish at.
     """
     import bou.migrate.api
