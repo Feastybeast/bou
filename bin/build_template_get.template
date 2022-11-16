@@ -1,0 +1,22 @@
+""" bou.template.get
+    ~~~
+    Maps publicly available bou.res templates as .{template}()
+
+    THIS FILE IS BUILT VIA /bin/build_template_api.py. DO NOT MANUALLY EDIT IT.
+"""
+
+from bou.constants import DOT_TEMPLATE
+import bou.template.helpers
+from bou.types import TemplateVars
+{% for each in public_templates %}
+
+def {{ each }}(**template_vars: TemplateVars) -> str:
+    """ Renders the {{ each }} template.
+
+    :param template_vars: to incorporate.
+    :returns: the rendered template.
+    """
+    return bou.template.helpers.apply(
+        f'{{ each }}{ DOT_TEMPLATE }', **template_vars
+    )
+{% endfor %}

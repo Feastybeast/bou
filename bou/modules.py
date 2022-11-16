@@ -11,6 +11,22 @@ import pathlib
 from bou.constants import BLANK, DOT, DOT_PY, FORWARD_SLASH
 
 
+def files_in(module: types.ModuleType):
+    """ Sugarcoats importlib.resources.files(:module:)
+
+    :param module: to index.
+    """
+    return importlib.resources.files(module)
+
+
+def load(module: str):
+    """ Sugarcoats dynamically importing the :module:
+
+    :param module: to import.
+    """
+    return importlib.import_module(module)
+
+
 def matching(glob: str):
     """ Locate packages matching :spec:
 
@@ -19,7 +35,7 @@ def matching(glob: str):
     :param glob: to search against.
     """
     pkg_root = glob.split(DOT)[0]
-    pkg_origin = importlib.util.find_spec(pkg_root).origin
+    pkg_origin = path(pkg_root)
     pkg_parent = pathlib.Path(pkg_origin).parent
 
     children = f'{FORWARD_SLASH.join(glob.split(DOT)[1:])}{DOT_PY}'
@@ -32,17 +48,9 @@ def matching(glob: str):
         yield f'{pkg_root}{DOT}{rel_pkg}'
 
 
-def load(module: str):
-    """ Sugarcoats dynamically importing the :module:
-
-    :param module: to import.
-    """
-    return importlib.import_module(module)
-
-
-def resources(module: types.ModuleType):
-    """ Sugarcoats importlib.resources.files(:module:)
+def path(module: str):
+    """ Indicates where :module: is stored.
 
     :param module: to index.
     """
-    return importlib.resources.files(module)
+    return importlib.util.find_spec(module).origin

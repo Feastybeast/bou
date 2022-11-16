@@ -1,0 +1,4 @@
+# Boufile.json
+{
+    '{{ UUID_CONST}}': '{{ UUID }}'
+}

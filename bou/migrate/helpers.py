@@ -26,7 +26,7 @@ def location(migrations: PathOrPackage) -> Migration:
 
         m = bou.modules.load(migrations)
         logging.debug(f'Python package located: {migrations}')
-        return bou.modules.resources(m)
+        return bou.modules.files_in(m)
 
     except (ImportError, TypeError, ModuleNotFoundError):
         raise MigrationsSourceError(
